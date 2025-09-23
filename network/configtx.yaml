@@ -1,0 +1,139 @@
+Organizations:
+    - &OrdererOrg
+        Name: OrdererOrg
+        ID: OrdererMSP
+        MSPDir: crypto-config/ordererOrganizations/example.com/msp
+        Policies:
+            Readers:
+                Type: Signature
+                Rule: "OR('OrdererMSP.member')"
+            Writers:
+                Type: Signature
+                Rule: "OR('OrdererMSP.member')"
+            Admins:
+                Type: Signature
+                Rule: "OR('OrdererMSP.admin')"
+
+    - &ElectionCommission
+        Name: ElectionCommissionMSP
+        ID: ElectionCommissionMSP
+        MSPDir: crypto-config/peerOrganizations/electioncommission.example.com/msp
+        Policies:
+            Readers:
+                Type: Signature
+                Rule: "OR('ElectionCommissionMSP.admin', 'ElectionCommissionMSP.peer', 'ElectionCommissionMSP.client')"
+            Writers:
+                Type: Signature
+                Rule: "OR('ElectionCommissionMSP.admin', 'ElectionCommissionMSP.client')"
+            Admins:
+                Type: Signature
+                Rule: "OR('ElectionCommissionMSP.admin')"
+        AnchorPeers:
+            - Host: peer0.electioncommission.example.com
+              Port: 7051
+
+    - &Auditor
+        Name: AuditorMSP
+        ID: AuditorMSP
+        MSPDir: crypto-config/peerOrganizations/auditor.example.com/msp
+        Policies:
+            Readers:
+                Type: Signature
+                Rule: "OR('AuditorMSP.admin', 'AuditorMSP.peer', 'AuditorMSP.client')"
+            Writers:
+                Type: Signature
+                Rule: "OR('AuditorMSP.admin', 'AuditorMSP.client')"
+            Admins:
+                Type: Signature
+                Rule: "OR('AuditorMSP.admin')"
+        AnchorPeers:
+            - Host: peer0.auditor.example.com
+              Port: 9051
+
+Capabilities:
+    Channel: &ChannelCapabilities
+        V2_0: true
+    Orderer: &OrdererCapabilities
+        V2_0: true
+    Application: &ApplicationCapabilities
+        V2_0: true
+
+Application: &ApplicationDefaults
+    Organizations:
+    Policies:
+        Readers:
+            Type: ImplicitMeta
+            Rule: "ANY Readers"
+        Writers:
+            Type: ImplicitMeta
+            Rule: "ANY Writers"
+        Admins:
+            Type: ImplicitMeta
+            Rule: "MAJORITY Admins"
+    Capabilities:
+        <<: *ApplicationCapabilities
+
+Orderer: &OrdererDefaults
+    OrdererType: etcdraft
+    Addresses:
+        - orderer.example.com:7050
+    BatchTimeout: 2s
+    BatchSize:
+        MaxMessageCount: 10
+        AbsoluteMaxBytes: 99 MB
+        PreferredMaxBytes: 512 KB
+    Organizations:
+    Policies:
+        Readers:
+            Type: ImplicitMeta
+            Rule: "ANY Readers"
+        Writers:
+            Type: ImplicitMeta
+            Rule: "ANY Writers"
+        Admins:
+            Type: ImplicitMeta
+            Rule: "MAJORITY Admins"
+        BlockValidation:
+            Type: ImplicitMeta
+            Rule: "ANY Writers"
+    Capabilities:
+        <<: *OrdererCapabilities
+
+Channel: &ChannelDefaults
+    Policies:
+        Readers:
+            Type: ImplicitMeta
+            Rule: "ANY Readers"
+        Writers:
+            Type: ImplicitMeta
+            Rule: "ANY Writers"
+        Admins:
+            Type: ImplicitMeta
+            Rule: "MAJORITY Admins"
+    Capabilities:
+        <<: *ChannelCapabilities
+
+Profiles:
+    TwoOrgsOrdererGenesis:
+        <<: *ChannelDefaults
+        Orderer:
+            <<: *OrdererDefaults
+            Organizations:
+                - *OrdererOrg
+            Capabilities:
+                <<: *OrdererCapabilities
+        Consortiums:
+            VotingConsortium:
+                Organizations:
+                    - *ElectionCommission
+                    - *Auditor
+    TwoOrgsChannel:
+        Consortium: VotingConsortium
+        <<: *ChannelDefaults
+        Application:
+            <<: *ApplicationDefaults
+            Organizations:
+                - *ElectionCommission
+                - *Auditor
+            Capabilities:
+                <<: *ApplicationCapabilities
