@@ -1,0 +1,78 @@
+{
+    "name": "voting-network",
+    "version": "1.0.0",
+    "client": {
+        "organization": "ElectionCommission",
+        "connection": {
+            "timeout": {
+                "peer": {
+                    "endorser": "300"
+                },
+                "orderer": "300"
+            }
+        }
+    },
+    "organizations": {
+        "ElectionCommission": {
+            "mspid": "ElectionCommissionMSP",
+            "peers": [
+                "peer0.electioncommission.example.com"
+            ],
+            "certificateAuthorities": [
+                "ca.electioncommission.example.com"
+            ]
+        },
+        "Auditor": {
+            "mspid": "AuditorMSP",
+            "peers": [
+                "peer0.auditor.example.com"
+            ],
+            "certificateAuthorities": [
+                "ca.auditor.example.com"
+            ]
+        }
+    },
+    "peers": {
+        "peer0.electioncommission.example.com": {
+            "url": "grpcs://peer0.electioncommission.example.com:7051",
+            "tlsCACerts": {
+                "path": "../organizations/peerOrganizations/electioncommission.example.com/tlsca/tlsca.electioncommission.example.com-cert.pem"
+            },
+            "grpcOptions": {
+                "ssl-target-name-override": "peer0.electioncommission.example.com",
+                "hostnameOverride": "peer0.electioncommission.example.com"
+            }
+        },
+        "peer0.auditor.example.com": {
+            "url": "grpcs://peer0.auditor.example.com:9051",
+            "tlsCACerts": {
+                "path": "../organizations/peerOrganizations/auditor.example.com/tlsca/tlsca.auditor.example.com-cert.pem"
+            },
+            "grpcOptions": {
+                "ssl-target-name-override": "peer0.auditor.example.com",
+                "hostnameOverride": "peer0.auditor.example.com"
+            }
+        }
+    },
+    "certificateAuthorities": {
+        "ca.electioncommission.example.com": {
+            "url": "https://ca.electioncommission.example.com:7054",
+            "caName": "ca.electioncommission.example.com",
+            "tlsCACerts": {
+                "path": "../organizations/peerOrganizations/electioncommission.example.com/ca/ca.electioncommission.example.com-cert.pem"
+            },
+            "httpOptions": {
+                "verify": false
+            }
+        },
+        "ca.auditor.example.com": {
+            "url": "https://ca.auditor.example.com:8054",
+            "caName": "ca.auditor.example.com",
+            "tlsCACerts": {
+                "path": "../organizations/peerOrganizations/auditor.example.com/ca/ca.auditor.example.com-cert.pem"
+            },
+            "httpOptions": {
+                "verify": false
+            }
+        }
+    }
