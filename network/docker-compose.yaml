@@ -1,0 +1,123 @@
+version: '2.1'
+
+volumes:
+  orderer.example.com:
+  peer0.electioncommission.example.com:
+  peer0.auditor.example.com:
+
+networks:
+  voting:
+
+services:
+  orderer.example.com:
+    container_name: orderer.example.com
+    image: hyperledger/fabric-orderer:2.5
+    environment:
+      - FABRIC_LOGGING_SPEC=INFO
+      - ORDERER_GENERAL_LISTENADDRESS=0.0.0.0
+      - ORDERER_GENERAL_LISTENPORT=7050
+      - ORDERER_GENERAL_GENESISMETHOD=file
+      - ORDERER_GENERAL_GENESISFILE=/var/hyperledger/orderer/orderer.genesis.block
+      - ORDERER_GENERAL_LOCALMSPID=OrdererMSP
+      - ORDERER_GENERAL_LOCALMSPDIR=/var/hyperledger/orderer/msp
+      - ORDERER_OPERATIONS_LISTENADDRESS=orderer.example.com:9443
+    working_dir: /opt/gopath/src/github.com/hyperledger/fabric
+    command: orderer
+    volumes:
+      - ./organizations/ordererOrganizations/example.com/orderers/orderer.example.com/msp:/var/hyperledger/orderer/msp
+      - ./organizations/ordererOrganizations/example.com/orderers/orderer.example.com/tls/:/var/hyperledger/orderer/tls
+      - orderer.example.com:/var/hyperledger/production/orderer
+    ports:
+      - 7050:7050
+      - 9443:9443
+    networks:
+      - voting
+
+  peer0.electioncommission.example.com:
+    container_name: peer0.electioncommission.example.com
+    image: hyperledger/fabric-peer:2.5
+    environment:
+      - CORE_PEER_ID=peer0.electioncommission.example.com
+      - CORE_PEER_ADDRESS=peer0.electioncommission.example.com:7051
+      - CORE_PEER_LISTENADDRESS=0.0.0.0:7051
+      - CORE_PEER_CHAINCODEADDRESS=peer0.electioncommission.example.com:7052
+      - CORE_PEER_CHAINCODELISTENADDRESS=0.0.0.0:7052
+      - CORE_PEER_GOSSIP_BOOTSTRAP=peer0.electioncommission.example.com:7051
+      - CORE_PEER_GOSSIP_EXTERNALENDPOINT=peer0.electioncommission.example.com:7051
+      - CORE_PEER_LOCALMSPID=ElectionCommissionMSP
+      - CORE_PEER_MSPCONFIGPATH=/etc/hyperledger/fabric/msp
+      - CORE_OPERATIONS_LISTENADDRESS=0.0.0.0:9444
+      - CORE_PEER_TLS_ENABLED=true
+      - CORE_PEER_TLS_CERT_FILE=/etc/hyperledger/fabric/tls/server.crt
+      - CORE_PEER_TLS_KEY_FILE=/etc/hyperledger/fabric/tls/server.key
+      - CORE_PEER_TLS_ROOTCERT_FILE=/etc/hyperledger/fabric/tls/ca.crt
+    working_dir: /opt/gopath/src/github.com/hyperledger/fabric/peer
+    command: peer node start
+    volumes:
+      - ./organizations/peerOrganizations/electioncommission.example.com/peers/peer0.electioncommission.example.com/msp:/etc/hyperledger/fabric/msp
+      - ./organizations/peerOrganizations/electioncommission.example.com/peers/peer0.electioncommission.example.com/tls:/etc/hyperledger/fabric/tls
+      - peer0.electioncommission.example.com:/var/hyperledger/production
+    ports:
+      - 7051:7051
+      - 9444:9444
+    networks:
+      - voting
+
+  peer0.auditor.example.com:
+    container_name: peer0.auditor.example.com
+    image: hyperledger/fabric-peer:2.5
+    environment:
+      - CORE_PEER_ID=peer0.auditor.example.com
+      - CORE_PEER_ADDRESS=peer0.auditor.example.com:9051
+      - CORE_PEER_LISTENADDRESS=0.0.0.0:9051
+      - CORE_PEER_CHAINCODEADDRESS=peer0.auditor.example.com:9052
+      - CORE_PEER_CHAINCODELISTENADDRESS=0.0.0.0:9052
+      - CORE_PEER_GOSSIP_BOOTSTRAP=peer0.auditor.example.com:9051
+      - CORE_PEER_GOSSIP_EXTERNALENDPOINT=peer0.auditor.example.com:9051
+      - CORE_PEER_LOCALMSPID=AuditorMSP
+      - CORE_PEER_MSPCONFIGPATH=/etc/hyperledger/fabric/msp
+      - CORE_OPERATIONS_LISTENADDRESS=0.0.0.0:9445
+      - CORE_PEER_TLS_ENABLED=true
+      - CORE_PEER_TLS_CERT_FILE=/etc/hyperledger/fabric/tls/server.crt
+      - CORE_PEER_TLS_KEY_FILE=/etc/hyperledger/fabric/tls/server.key
+      - CORE_PEER_TLS_ROOTCERT_FILE=/etc/hyperledger/fabric/tls/ca.crt
+    working_dir: /opt/gopath/src/github.com/hyperledger/fabric/peer
+    command: peer node start
+    volumes:
+      - ./organizations/peerOrganizations/auditor.example.com/peers/peer0.auditor.example.com/msp:/etc/hyperledger/fabric/msp
+      - ./organizations/peerOrganizations/auditor.example.com/peers/peer0.auditor.example.com/tls:/etc/hyperledger/fabric/tls
+      - peer0.auditor.example.com:/var/hyperledger/production
+    ports:
+      - 9051:9051
+      - 9445:9445
+    networks:
+      - voting
+
+  cli:
+    container_name: cli
+    image: hyperledger/fabric-tools:2.5
+    tty: true
+    stdin_open: true
+    environment:
+      - GOPATH=/opt/gopath
+      - FABRIC_LOGGING_SPEC=INFO
+      - CORE_PEER_ID=cli
+      - CORE_PEER_ADDRESS=peer0.electioncommission.example.com:7051
+      - CORE_PEER_LOCALMSPID=ElectionCommissionMSP
+      - CORE_PEER_MSPCONFIGPATH=/opt/gopath/src/github.com/hyperledger/fabric/peer/organizations/peerOrganizations/electioncommission.example.com/users/Admin@electioncommission.example.com/msp
+      - CORE_PEER_TLS_ENABLED=true
+      - CORE_PEER_TLS_CERT_FILE=/opt/gopath/src/github.com/hyperledger/fabric/peer/crypto/peerOrganizations/electioncommission.example.com/peers/peer0.electioncommission.example.com/tls/server.crt
+      - CORE_PEER_TLS_KEY_FILE=/opt/gopath/src/github.com/hyperledger/fabric/peer/crypto/peerOrganizations/electioncommission.example.com/peers/peer0.electioncommission.example.com/tls/server.key
+      - CORE_PEER_TLS_ROOTCERT_FILE=/opt/gopath/src/github.com/hyperledger/fabric/peer/crypto/peerOrganizations/electioncommission.example.com/peers/peer0.electioncommission.example.com/tls/ca.crt
+    working_dir: /opt/gopath/src/github.com/hyperledger/fabric/peer
+    command: /bin/bash
+    volumes:
+      - ./organizations:/opt/gopath/src/github.com/hyperledger/fabric/peer/organizations/
+      - ./scripts:/opt/gopath/src/github.com/hyperledger/fabric/peer/scripts/
+      - ./channel-artifacts:/opt/gopath/src/github.com/hyperledger/fabric/peer/channel-artifacts/
+    depends_on:
+      - orderer.example.com
+      - peer0.electioncommission.example.com
+      - peer0.auditor.example.com
+    networks:
+      - voting

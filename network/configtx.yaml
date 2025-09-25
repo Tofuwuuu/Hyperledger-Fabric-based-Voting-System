@@ -2,7 +2,7 @@ Organizations:
     - &OrdererOrg
         Name: OrdererOrg
         ID: OrdererMSP
-        MSPDir: crypto-config/ordererOrganizations/example.com/msp
+        MSPDir: organizations/ordererOrganizations/example.com/msp
         Policies:
             Readers:
                 Type: Signature
@@ -17,7 +17,7 @@ Organizations:
     - &ElectionCommission
         Name: ElectionCommissionMSP
         ID: ElectionCommissionMSP
-        MSPDir: crypto-config/peerOrganizations/electioncommission.example.com/msp
+        MSPDir: organizations/peerOrganizations/electioncommission.example.com/msp
         Policies:
             Readers:
                 Type: Signature
@@ -35,7 +35,7 @@ Organizations:
     - &Auditor
         Name: AuditorMSP
         ID: AuditorMSP
-        MSPDir: crypto-config/peerOrganizations/auditor.example.com/msp
+        MSPDir: organizations/peerOrganizations/auditor.example.com/msp
         Policies:
             Readers:
                 Type: Signature
@@ -74,7 +74,7 @@ Application: &ApplicationDefaults
         <<: *ApplicationCapabilities
 
 Orderer: &OrdererDefaults
-    OrdererType: etcdraft
+    OrdererType: solo
     Addresses:
         - orderer.example.com:7050
     BatchTimeout: 2s
