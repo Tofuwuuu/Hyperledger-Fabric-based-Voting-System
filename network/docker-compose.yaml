@@ -42,6 +42,7 @@ services:
     container_name: peer0.electioncommission.example.com
     image: hyperledger/fabric-peer:2.5
     environment:
+      - FABRIC_LOGGING_SPEC=DEBUG
       - CORE_PEER_ID=peer0.electioncommission.example.com
       - CORE_PEER_ADDRESS=peer0.electioncommission.example.com:7051
       - CORE_PEER_LISTENADDRESS=0.0.0.0:7051
@@ -56,6 +57,9 @@ services:
       - CORE_PEER_TLS_CERT_FILE=/etc/hyperledger/fabric/tls/server.crt
       - CORE_PEER_TLS_KEY_FILE=/etc/hyperledger/fabric/tls/server.key
       - CORE_PEER_TLS_ROOTCERT_FILE=/etc/hyperledger/fabric/tls/ca.crt
+      - CORE_PEER_GOSSIP_USELEADERELECTION=true
+      - CORE_PEER_GOSSIP_ORGLEADER=false
+      - CORE_PEER_PROFILE_ENABLED=true
     working_dir: /opt/gopath/src/github.com/hyperledger/fabric/peer
     command: peer node start
     volumes:
@@ -72,6 +76,7 @@ services:
     container_name: peer0.auditor.example.com
     image: hyperledger/fabric-peer:2.5
     environment:
+      - FABRIC_LOGGING_SPEC=DEBUG
       - CORE_PEER_ID=peer0.auditor.example.com
       - CORE_PEER_ADDRESS=peer0.auditor.example.com:9051
       - CORE_PEER_LISTENADDRESS=0.0.0.0:9051
@@ -86,6 +91,9 @@ services:
       - CORE_PEER_TLS_CERT_FILE=/etc/hyperledger/fabric/tls/server.crt
       - CORE_PEER_TLS_KEY_FILE=/etc/hyperledger/fabric/tls/server.key
       - CORE_PEER_TLS_ROOTCERT_FILE=/etc/hyperledger/fabric/tls/ca.crt
+      - CORE_PEER_GOSSIP_USELEADERELECTION=true
+      - CORE_PEER_GOSSIP_ORGLEADER=false
+      - CORE_PEER_PROFILE_ENABLED=true
     working_dir: /opt/gopath/src/github.com/hyperledger/fabric/peer
     command: peer node start
     volumes:
