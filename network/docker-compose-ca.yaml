@@ -17,7 +17,7 @@ services:
       - "17054:17054"
     command: sh -c 'fabric-ca-server start -b admin:adminpw -d'
     volumes:
-      - ./organizations/fabric-ca/auditor:/etc/hyperledger/fabric-ca-server
+      - ./organizations/fabric-ca/ca_auditor:/etc/hyperledger/fabric-ca-server
     container_name: ca_auditor
     networks:
       - test
@@ -35,7 +35,8 @@ services:
       - "18054:18054"
     command: sh -c 'fabric-ca-server start -b admin:adminpw -d'
     volumes:
-      - ./organizations/fabric-ca/electioncommission:/etc/hyperledger/fabric-ca-server
+      - ./organizations/fabric-ca/ca_electioncommission:/etc/hyperledger/fabric-ca-server
     container_name: ca_electioncommission
     networks:
+      - voting
       - test
