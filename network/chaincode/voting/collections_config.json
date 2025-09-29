@@ -1,0 +1,12 @@
+{
+    "name": "collectionBallots",
+    "policy": "OR('ElectionCommissionMSP.member', 'AuditorMSP.member')",
+    "requiredPeerCount": 1,
+    "maxPeerCount": 3,
+    "blockToLive": 1000000,
+    "memberOnlyRead": true,
+    "memberOnlyWrite": true,
+    "endorsementPolicy": {
+        "signaturePolicy": "OR('ElectionCommissionMSP.member', 'AuditorMSP.member')"
+    }
+}
