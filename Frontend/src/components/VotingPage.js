@@ -12,6 +12,7 @@ import {
     Alert
 } from '@mui/material';
 import { VoteEncryption } from '../utils/encryption';
+import { electionApi } from '../utils/api';
 import { useNavigate } from 'react-router-dom';
 
 const VotingPage = () => {
@@ -37,26 +38,15 @@ const VotingPage = () => {
         try {
             setLoading(true);
             // Fetch election public key
-            const token = localStorage.getItem('token');
-            const keyResponse = await fetch('http://localhost:3001/api/election/public-key', {
-                headers: {
-                    'Authorization': `Bearer ${token}`
-                }
-            });
-            const keyData = await keyResponse.json();
-            if (keyData.success) {
-                setElectionPublicKey(keyData.publicKey);
+            const keyResponse = await electionApi.getPublicKey();
+            if (keyResponse.data?.success) {
+                setElectionPublicKey(keyResponse.data.publicKey);
             }
 
             // Fetch candidates
-            const candidatesResponse = await fetch('http://localhost:3001/api/candidates', {
-                headers: {
-                    'Authorization': `Bearer ${token}`
-                }
-            });
-            const candidatesData = await candidatesResponse.json();
-            if (candidatesData.success) {
-                setCandidates(candidatesData.candidates);
+            const candidatesResponse = await electionApi.getCandidates();
+            if (candidatesResponse.data?.success) {
+                setCandidates(candidatesResponse.data.candidates);
             }
         } catch (err) {
             setError('Failed to fetch election data');
@@ -80,19 +70,9 @@ const VotingPage = () => {
             const { encryptedVote, ballotHash } = await encryption.encryptVote(vote);
 
             // Submit vote
-            const response = await fetch('http://localhost:3001/api/vote/cast', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'Authorization': `Bearer ${localStorage.getItem('token')}`
-                },
-                body: JSON.stringify({
-                    candidateId
-                })
-            });
-
-            const data = await response.json();
-            if (data.success) {
+            const response = await electionApi.castVote(candidateId);
+            const data = response.data;
+            if (data?.success) {
                 setSuccess('Vote cast successfully!');
                 // Store ballot hash for verification
                 localStorage.setItem('ballotHash', ballotHash);
@@ -104,6 +84,10 @@ const VotingPage = () => {
                 setError(data.message || 'Failed to cast vote');
             }
         } catch (err) {
+            if (err.isUnauthorized) {
+                navigate('/');
+                return;
+            }
             setError(err.message || 'Failed to cast vote');
         } finally {
             setLoading(false);
@@ -132,6 +116,11 @@ const VotingPage = () => {
             </Box>
             
             <Grid container spacing={3}>
+                {candidates.length === 0 && (
+                    <Grid item xs={12}>
+                        <Typography color="textSecondary">No candidates available.</Typography>
+                    </Grid>
+                )}
                 {candidates.map((candidate) => (
                     <Grid item xs={12} sm={6} md={4} key={candidate.id}>
                         <Card>

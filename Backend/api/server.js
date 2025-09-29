@@ -194,8 +194,8 @@ app.get('/api/candidates', authenticate, async (req, res) => {
     }
 });
 
-// Get election public key endpoint
-app.get('/api/election/public-key', authenticate, async (req, res) => {
+// Get election public key endpoint (public)
+app.get('/api/election/public-key', async (req, res) => {
     try {
         // Mock public key - in a real system, this would be generated securely
         const publicKey = '-----BEGIN PUBLIC KEY-----\nMIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEA...\n-----END PUBLIC KEY-----';

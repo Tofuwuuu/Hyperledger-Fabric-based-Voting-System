@@ -11,6 +11,7 @@ import {
     Box
 } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
+import { electionApi } from '../utils/api';
 
 const Results = () => {
     const [candidates, setCandidates] = useState([]);
@@ -25,20 +26,18 @@ const Results = () => {
 
     const fetchCandidates = async () => {
         try {
-            const token = localStorage.getItem('token');
-            const response = await fetch('http://localhost:3001/api/candidates', {
-                headers: {
-                    'Authorization': `Bearer ${token}`
-                }
-            });
-
-            const data = await response.json();
-            if (data.success) {
+            const response = await electionApi.getCandidates();
+            const data = response.data;
+            if (data?.success) {
                 setCandidates(data.candidates);
                 // Fetch results for each candidate
                 fetchResultsForCandidates(data.candidates);
             }
         } catch (err) {
+            if (err.isUnauthorized) {
+                navigate('/');
+                return;
+            }
             setError('Failed to fetch candidates');
         }
     };
@@ -48,23 +47,20 @@ const Results = () => {
         const resultsData = {};
         
         try {
-            const token = localStorage.getItem('token');
-            
             for (const candidate of candidateList) {
                 try {
-                    const response = await fetch(`http://localhost:3001/api/results/${candidate.id}`, {
-                        headers: {
-                            'Authorization': `Bearer ${token}`
-                        }
-                    });
-
-                    const data = await response.json();
-                    if (data.success) {
+                    const response = await electionApi.getResultsFor(candidate.id);
+                    const data = response.data;
+                    if (data?.success) {
                         resultsData[candidate.id] = data.results.voteCount || 0;
                     } else {
                         resultsData[candidate.id] = 0;
                     }
                 } catch (err) {
+                    if (err.isUnauthorized) {
+                        navigate('/');
+                        return;
+                    }
                     resultsData[candidate.id] = 0;
                 }
             }

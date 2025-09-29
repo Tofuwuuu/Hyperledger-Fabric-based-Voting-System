@@ -12,6 +12,7 @@ import {
     Grid
 } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
+import { api } from '../utils/api';
 
 const Admin = () => {
     const [voterId, setVoterId] = useState('');
@@ -33,17 +34,8 @@ const Admin = () => {
         setSuccess('');
 
         try {
-            const token = localStorage.getItem('token');
-            const response = await fetch('http://localhost:3001/api/voter/register', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'Authorization': `Bearer ${token}`
-                },
-                body: JSON.stringify({ voterId }),
-            });
-
-            const data = await response.json();
+            const response = await api.post('/voter/register', { voterId });
+            const data = response.data;
 
             if (data.success) {
                 setSuccess('Voter registered successfully!');
@@ -52,6 +44,10 @@ const Admin = () => {
                 setError(data.message || 'Failed to register voter');
             }
         } catch (err) {
+            if (err.isUnauthorized) {
+                navigate('/');
+                return;
+            }
             setError('Failed to connect to server');
         } finally {
             setLoading(false);
