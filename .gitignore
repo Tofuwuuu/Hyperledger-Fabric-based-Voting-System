@@ -114,6 +114,10 @@ Backend/wallet/
 *.key
 *.crt
 
+# Fabric samples and examples (reference material)
+network/fabric-samples/
+fabric-samples-main/
+
 # Build outputs
 build/
 dist/
