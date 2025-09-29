@@ -13,8 +13,7 @@ class FabricCAService {
     }
 
     async init() {
-        const ccp = JSON.parse(fs.readFileSync(path.join(process.cwd(), 'config', 'connection-profile.json'), 'utf8'));
-        const ca = ccp.certificateAuthorities[this.caInfo];
+        const ccp = JSON.parse(fs.readFileSync(path.join(process.cwd(), 'Backend', 'connection-profile.json'), 'utf8'));
         const caInfo = ccp.certificateAuthorities[this.caInfo];
         const caTLSCACerts = caInfo.tlsCACerts.pem;
         this.caClient = new FabricCAServices(caInfo.url, { trustedRoots: caTLSCACerts, verify: false }, caInfo.caName);

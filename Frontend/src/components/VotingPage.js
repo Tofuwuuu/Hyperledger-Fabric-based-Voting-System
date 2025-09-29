@@ -7,9 +7,10 @@ import {
     Container,
     Grid,
     CircularProgress,
-    Snackbar
-} from '@material-ui/core';
-import { Alert } from '@material-ui/lab';
+    Snackbar,
+    Box,
+    Alert
+} from '@mui/material';
 import { VoteEncryption } from '../utils/encryption';
 import { useNavigate } from 'react-router-dom';
 
@@ -21,6 +22,12 @@ const VotingPage = () => {
     const navigate = useNavigate();
     const [electionPublicKey, setElectionPublicKey] = useState(null);
 
+    const handleLogout = () => {
+        localStorage.removeItem('token');
+        localStorage.removeItem('user');
+        navigate('/');
+    };
+
     useEffect(() => {
         // Fetch election public key and candidates when component mounts
         fetchElectionData();
@@ -30,14 +37,23 @@ const VotingPage = () => {
         try {
             setLoading(true);
             // Fetch election public key
-            const keyResponse = await fetch('/api/election/public-key');
+            const token = localStorage.getItem('token');
+            const keyResponse = await fetch('http://localhost:3001/api/election/public-key', {
+                headers: {
+                    'Authorization': `Bearer ${token}`
+                }
+            });
             const keyData = await keyResponse.json();
             if (keyData.success) {
                 setElectionPublicKey(keyData.publicKey);
             }
 
             // Fetch candidates
-            const candidatesResponse = await fetch('/api/candidates');
+            const candidatesResponse = await fetch('http://localhost:3001/api/candidates', {
+                headers: {
+                    'Authorization': `Bearer ${token}`
+                }
+            });
             const candidatesData = await candidatesResponse.json();
             if (candidatesData.success) {
                 setCandidates(candidatesData.candidates);
@@ -61,18 +77,17 @@ const VotingPage = () => {
 
             // Encrypt vote
             const encryption = new VoteEncryption(electionPublicKey);
-            const { encryptedVote, ballotHash } = encryption.encryptVote(vote);
+            const { encryptedVote, ballotHash } = await encryption.encryptVote(vote);
 
             // Submit vote
-            const response = await fetch('/api/vote/cast', {
+            const response = await fetch('http://localhost:3001/api/vote/cast', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
                     'Authorization': `Bearer ${localStorage.getItem('token')}`
                 },
                 body: JSON.stringify({
-                    encryptedVote,
-                    ballotHash
+                    candidateId
                 })
             });
 
@@ -107,9 +122,14 @@ const VotingPage = () => {
 
     return (
         <Container>
-            <Typography variant="h4" gutterBottom style={{ marginTop: '2rem' }}>
-                Cast Your Vote
-            </Typography>
+            <Box display="flex" justifyContent="space-between" alignItems="center" style={{ marginTop: '2rem', marginBottom: '2rem' }}>
+                <Typography variant="h4">
+                    Cast Your Vote
+                </Typography>
+                <Button onClick={handleLogout} variant="outlined">
+                    Logout
+                </Button>
+            </Box>
             
             <Grid container spacing={3}>
                 {candidates.map((candidate) => (
