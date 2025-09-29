@@ -1,0 +1,90 @@
+{
+    "name": "voting-network",
+    "version": "1.0.0",
+    "client": {
+        "organization": "ElectionCommissionMSP",
+        "connection": {
+            "timeout": {
+                "peer": {
+                    "endorser": "300"
+                }
+            }
+        }
+    },
+    "organizations": {
+        "ElectionCommissionMSP": {
+            "mspid": "ElectionCommissionMSP",
+            "peers": [
+                "peer0.electioncommission.example.com"
+            ],
+            "certificateAuthorities": [
+                "ca.electioncommission.example.com"
+            ]
+        },
+        "AuditorMSP": {
+            "mspid": "AuditorMSP",
+            "peers": [
+                "peer0.auditor.example.com"
+            ],
+            "certificateAuthorities": [
+                "ca.auditor.example.com"
+            ]
+        }
+    },
+    "orderers": {
+        "orderer.example.com": {
+            "url": "grpc://localhost:7050"
+        }
+    },
+    "peers": {
+        "peer0.electioncommission.example.com": {
+            "url": "grpc://localhost:7051"
+        },
+        "peer0.auditor.example.com": {
+            "url": "grpc://localhost:9051"
+        }
+    },
+    "certificateAuthorities": {
+        "ca.electioncommission.example.com": {
+            "url": "https://localhost:7054",
+            "caName": "ca-electioncommission",
+            "tlsCACerts": {
+                "pem": ["-----BEGIN CERTIFICATE-----\nMIICATCCAWigAwIBAgIQUl2mY8nNl5fXzJzJzJzJzAJBgUrDgMCHQUAMBcxFTAT\nBgNVBAMTDGNhLWV4YW1wbGUuY29tMB4XDTIwMDEwMTAwMDAwMFoXDTMwMDEwMTAw\nMDAwMFowFzEVMBMGA1UEAxMMY2EtZXhhbXBsZS5jb20wWTATBgcqhkjOPQIBBggq\nhkjOPQMBBwNCAAQ="]
+            },
+            "httpOptions": {
+                "verify": false
+            }
+        },
+        "ca.auditor.example.com": {
+            "url": "https://localhost:8054",
+            "caName": "ca-auditor",
+            "tlsCACerts": {
+                "pem": ["-----BEGIN CERTIFICATE-----\nMIICATCCAWigAwIBAgIQUl2mY8nNl5fXzJzJzJzJzAJBgUrDgMCHQUAMBcxFTAT\nBgNVBAMTDGNhLWV4YW1wbGUuY29tMB4XDTIwMDEwMTAwMDAwMFoXDTMwMDEwMTAw\nMDAwMFowFzEVMBMGA1UEAxMMY2EtZXhhbXBsZS5jb20wWTATBgcqhkjOPQIBBggq\nhkjOPQMBBwNCAAQ="]
+            },
+            "httpOptions": {
+                "verify": false
+            }
+        }
+    },
+    "channels": {
+        "votingchannel": {
+            "orderers": [
+                "orderer.example.com"
+            ],
+            "peers": {
+                "peer0.electioncommission.example.com": {
+                    "endorsingPeer": true,
+                    "chaincodeQuery": true,
+                    "ledgerQuery": true,
+                    "eventSource": true
+                },
+                "peer0.auditor.example.com": {
+                    "endorsingPeer": true,
+                    "chaincodeQuery": true,
+                    "ledgerQuery": true,
+                    "eventSource": true
+                }
+            }
+        }
+    }
+}

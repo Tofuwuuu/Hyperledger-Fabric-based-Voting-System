@@ -14,7 +14,7 @@ const authenticate = async (req, res, next) => {
         const decoded = jwt.verify(token, JWT_SECRET);
         
         // Get wallet
-        const wallet = await Wallets.newFileSystemWallet(path.join(process.cwd(), 'wallet'));
+        const wallet = await Wallets.newFileSystemWallet(path.join(process.cwd(), 'Backend', 'wallet'));
         
         // Check if user exists in wallet
         const identity = await wallet.get(decoded.userId);
