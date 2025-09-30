@@ -1,8 +1,7 @@
 const jwt = require('jsonwebtoken');
 const { Wallets } = require('fabric-network');
 const path = require('path');
-
-const JWT_SECRET = process.env.JWT_SECRET || 'voting-system-secret';
+const config = require('../config/config');
 
 const authenticate = async (req, res, next) => {
     try {
@@ -11,10 +10,13 @@ const authenticate = async (req, res, next) => {
             return res.status(401).json({ success: false, message: 'Authentication token required' });
         }
 
-        const decoded = jwt.verify(token, JWT_SECRET);
+        const decoded = jwt.verify(token, config.jwt.secret);
         
         // Get wallet
-        const wallet = await Wallets.newFileSystemWallet(path.join(process.cwd(), 'Backend', 'wallet'));
+        const walletPath = path.isAbsolute(config.fabric.walletPath)
+            ? config.fabric.walletPath
+            : path.join(process.cwd(), config.fabric.walletPath);
+        const wallet = await Wallets.newFileSystemWallet(walletPath);
         
         // Check if user exists in wallet
         const identity = await wallet.get(decoded.userId);

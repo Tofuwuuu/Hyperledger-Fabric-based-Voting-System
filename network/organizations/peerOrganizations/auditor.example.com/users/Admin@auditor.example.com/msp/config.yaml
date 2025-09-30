@@ -1,14 +1,14 @@
 NodeOUs:
   Enable: true
   ClientOUIdentifier:
-    Certificate: cacerts\ca.auditor.example.com-cert.pem
+    Certificate: cacerts/localhost-7054-ca-auditor.pem
     OrganizationalUnitIdentifier: client
   PeerOUIdentifier:
-    Certificate: cacerts\ca.auditor.example.com-cert.pem
+    Certificate: cacerts/localhost-7054-ca-auditor.pem
     OrganizationalUnitIdentifier: peer
   AdminOUIdentifier:
-    Certificate: cacerts\ca.auditor.example.com-cert.pem
+    Certificate: cacerts/localhost-7054-ca-auditor.pem
     OrganizationalUnitIdentifier: admin
   OrdererOUIdentifier:
-    Certificate: cacerts\ca.auditor.example.com-cert.pem
+    Certificate: cacerts/localhost-7054-ca-auditor.pem
     OrganizationalUnitIdentifier: orderer

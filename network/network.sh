@@ -33,6 +33,7 @@ else
     # Windows specific settings
     export MSYS_NO_PATHCONV=1
     export DOCKER_SOCK=
+fi
 
 # Initialize the network
 function networkUp() {

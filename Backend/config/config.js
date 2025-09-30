@@ -11,7 +11,10 @@ module.exports = {
         channelName: process.env.CHANNEL_NAME || 'votingchannel',
         chaincodeName: process.env.CHAINCODE_NAME || 'votingcc',
         mspId: process.env.MSP_ID || 'ElectionCommissionMSP',
-        walletPath: process.env.WALLET_PATH || './wallet'
+        // Default to the existing repo wallet directory
+        walletPath: process.env.WALLET_PATH || 'Backend/Backend/wallet',
+        // Name of the CA as it appears under certificateAuthorities in connection-profile.json
+        caName: process.env.CA_NAME || 'ca.electioncommission.example.com'
     },
     rateLimit: {
         windowMs: parseInt(process.env.RATE_LIMIT_WINDOW_MS) || 15 * 60 * 1000, // 15 minutes

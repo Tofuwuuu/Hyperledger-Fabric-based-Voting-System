@@ -21,6 +21,7 @@ services:
       - ORDERER_GENERAL_LOCALMSPID=OrdererMSP
       - ORDERER_GENERAL_LOCALMSPDIR=/var/hyperledger/orderer/msp
       - ORDERER_OPERATIONS_LISTENADDRESS=orderer.example.com:9443
+      - ORDERER_ADMIN_LISTENADDRESS=0.0.0.0:7053
       - ORDERER_GENERAL_TLS_ENABLED=true
       - ORDERER_GENERAL_TLS_PRIVATEKEY=/var/hyperledger/orderer/tls/server.key
       - ORDERER_GENERAL_TLS_CERTIFICATE=/var/hyperledger/orderer/tls/server.crt
@@ -34,6 +35,7 @@ services:
       - ./channel-artifacts/genesis.block:/var/hyperledger/orderer/orderer.genesis.block
     ports:
       - 7050:7050
+      - 7053:7053
       - 9443:9443
     networks:
       - voting
@@ -128,6 +130,8 @@ services:
       - ./organizations:/opt/gopath/src/github.com/hyperledger/fabric/peer/organizations/
       - ./scripts:/opt/gopath/src/github.com/hyperledger/fabric/peer/scripts/
       - ./channel-artifacts:/opt/gopath/src/github.com/hyperledger/fabric/peer/channel-artifacts/
+      - ./configtx:/opt/gopath/src/github.com/hyperledger/fabric/peer/configtx/
+      - ../config:/opt/gopath/src/github.com/hyperledger/fabric/config/
     depends_on:
       - orderer.example.com
       - peer0.electioncommission.example.com

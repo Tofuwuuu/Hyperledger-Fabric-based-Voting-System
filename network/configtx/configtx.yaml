@@ -146,6 +146,22 @@ Profiles:
                 Organizations:
                     - *ElectionCommission
                     - *Auditor
+    ChannelUsingRaft:
+        <<: *ChannelDefaults
+        Orderer:
+            <<: *OrdererDefaults
+            Organizations:
+                - *OrdererOrg
+            Capabilities:
+                <<: *OrdererCapabilities
+        Consortium: VotingConsortium
+        Application:
+            <<: *ApplicationDefaults
+            Organizations:
+                - *ElectionCommission
+                - *Auditor
+            Capabilities:
+                <<: *ApplicationCapabilities
     TwoOrgsChannel:
         Consortium: VotingConsortium
         <<: *ChannelDefaults

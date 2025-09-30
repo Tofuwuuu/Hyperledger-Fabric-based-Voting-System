@@ -12,13 +12,16 @@ import {
     Grid
 } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
-import { api } from '../utils/api';
+import { api, electionApi } from '../utils/api';
 
 const Admin = () => {
     const [voterId, setVoterId] = useState('');
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState('');
     const [success, setSuccess] = useState('');
+    const [seedLoading, setSeedLoading] = useState(false);
+    const [seedError, setSeedError] = useState('');
+    const [seedSuccess, setSeedSuccess] = useState('');
     const navigate = useNavigate();
 
     const handleLogout = () => {
@@ -51,6 +54,34 @@ const Admin = () => {
             setError('Failed to connect to server');
         } finally {
             setLoading(false);
+        }
+    };
+
+    const handleSeedCandidates = async () => {
+        setSeedLoading(true);
+        setSeedError('');
+        setSeedSuccess('');
+        try {
+            const defaultCandidates = [
+                { id: 'candidate1', name: 'John Doe', party: 'Democratic Party' },
+                { id: 'candidate2', name: 'Jane Smith', party: 'Republican Party' },
+                { id: 'candidate3', name: 'Bob Johnson', party: 'Independent' }
+            ];
+            const response = await electionApi.seedCandidates(defaultCandidates);
+            const data = response.data;
+            if (data.success) {
+                setSeedSuccess('Candidates seeded successfully');
+            } else {
+                setSeedError(data.message || 'Failed to seed candidates');
+            }
+        } catch (err) {
+            if (err.isUnauthorized) {
+                navigate('/');
+                return;
+            }
+            setSeedError('Failed to connect to server');
+        } finally {
+            setSeedLoading(false);
         }
     };
 
@@ -133,6 +164,22 @@ const Admin = () => {
                                     fullWidth
                                 >
                                     Check API Health
+                                </Button>
+
+                                {seedError && (
+                                    <Alert severity="error">{seedError}</Alert>
+                                )}
+                                {seedSuccess && (
+                                    <Alert severity="success">{seedSuccess}</Alert>
+                                )}
+                                <Button
+                                    variant="contained"
+                                    color="secondary"
+                                    onClick={handleSeedCandidates}
+                                    disabled={seedLoading}
+                                    fullWidth
+                                >
+                                    {seedLoading ? <CircularProgress size={24} /> : 'Seed Default Candidates'}
                                 </Button>
                             </Box>
                         </CardContent>

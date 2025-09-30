@@ -69,8 +69,8 @@ const VotingPage = () => {
             const encryption = new VoteEncryption(electionPublicKey);
             const { encryptedVote, ballotHash } = await encryption.encryptVote(vote);
 
-            // Submit vote
-            const response = await electionApi.castVote(candidateId);
+            // Submit vote including encrypted payload and hash
+            const response = await electionApi.castVote({ candidateId, encryptedVote, ballotHash });
             const data = response.data;
             if (data?.success) {
                 setSuccess('Vote cast successfully!');

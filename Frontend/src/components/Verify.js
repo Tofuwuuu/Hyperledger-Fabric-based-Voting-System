@@ -1,10 +1,25 @@
-import React, { useMemo } from 'react';
+import React, { useMemo, useEffect, useState } from 'react';
 import { Container, Card, CardContent, Typography, Button, Box } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
+import { electionApi } from '../utils/api';
 
 const Verify = () => {
   const navigate = useNavigate();
   const ballotHash = useMemo(() => localStorage.getItem('ballotHash') || '', []);
+  const [recordedHash, setRecordedHash] = useState('');
+
+  useEffect(() => {
+    const fetchVerify = async () => {
+      try {
+        const res = await electionApi.getVerify();
+        const data = res.data;
+        if (data?.success) {
+          setRecordedHash(data.voter?.ballotHash || '');
+        }
+      } catch (_) {}
+    };
+    fetchVerify();
+  }, []);
 
   return (
     <Container>
@@ -21,6 +36,14 @@ const Verify = () => {
           <Typography variant="body1" style={{ wordBreak: 'break-all' }}>
             {ballotHash || 'No ballot hash found. Cast a vote first.'}
           </Typography>
+          {recordedHash && (
+            <>
+              <Typography variant="subtitle2" color="textSecondary" style={{ marginTop: '1rem' }}>Recorded On-Chain Hash</Typography>
+              <Typography variant="body1" style={{ wordBreak: 'break-all' }}>
+                {recordedHash}
+              </Typography>
+            </>
+          )}
         </CardContent>
       </Card>
     </Container>
@@ -28,5 +51,6 @@ const Verify = () => {
 };
 
 export default Verify;
+
 
 

@@ -37,8 +37,11 @@ export const authApi = {
 export const electionApi = {
   getPublicKey: () => api.get('/election/public-key'),
   getCandidates: () => api.get('/candidates'),
-  castVote: (candidateId) => api.post('/vote/cast', { candidateId }),
+  castVote: (payload) => api.post('/vote/cast', payload),
   getResultsFor: (candidateId) => api.get(`/results/${candidateId}`),
+  getVerify: () => api.get('/vote/verify'),
+  seedCandidates: (candidates) => api.post('/candidates/seed', { candidates }),
 };
+
 
 

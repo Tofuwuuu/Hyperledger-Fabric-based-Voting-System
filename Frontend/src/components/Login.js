@@ -13,6 +13,7 @@ import {
     Alert
 } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
+import { authApi } from '../utils/api';
 
 const Login = () => {
     const [formData, setFormData] = useState({
@@ -37,15 +38,8 @@ const Login = () => {
         setError('');
 
         try {
-            const response = await fetch('http://localhost:3001/api/login', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify(formData),
-            });
-
-            const data = await response.json();
+            const response = await authApi.login(formData);
+            const data = response.data;
 
             if (data.success) {
                 localStorage.setItem('token', data.token);
