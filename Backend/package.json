@@ -5,6 +5,7 @@
   "main": "api/server.js",
   "scripts": {
     "start": "node api/server.js",
+    "demo": "node api/server-demo.js",
     "dev": "nodemon api/server.js"
   },
   "dependencies": {

@@ -8,6 +8,7 @@ import Results from './components/Results';
 import Navigation from './components/Navigation';
 import Admin from './components/Admin';
 import Verify from './components/Verify';
+import DemoVoting from './components/DemoVoting';
 import { RequireAuth, RequireRole } from './components/RouteGuards';
 
 const theme = createTheme({
@@ -28,7 +29,8 @@ function App() {
       <Router>
         <Navigation />
         <Routes>
-          <Route path="/" element={<Login />} />
+          <Route path="/" element={<DemoVoting />} />
+          <Route path="/login" element={<Login />} />
           <Route
             path="/vote"
             element={(<RequireRole role="voter"><VotingPage /></RequireRole>)}
