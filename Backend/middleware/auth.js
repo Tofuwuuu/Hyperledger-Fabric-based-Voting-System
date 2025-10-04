@@ -11,17 +11,19 @@ const authenticate = async (req, res, next) => {
         }
 
         const decoded = jwt.verify(token, config.jwt.secret);
-        
-        // Get wallet
-        const walletPath = path.isAbsolute(config.fabric.walletPath)
-            ? config.fabric.walletPath
-            : path.join(process.cwd(), config.fabric.walletPath);
-        const wallet = await Wallets.newFileSystemWallet(walletPath);
-        
-        // Check if user exists in wallet
-        const identity = await wallet.get(decoded.userId);
-        if (!identity) {
-            return res.status(401).json({ success: false, message: 'Invalid user credentials' });
+
+        // In development, skip wallet identity check to allow API access before CA enrollment
+        if (config.server.nodeEnv !== 'production') {
+            // no-op
+        } else {
+            const walletPath = path.isAbsolute(config.fabric.walletPath)
+                ? config.fabric.walletPath
+                : path.join(process.cwd(), config.fabric.walletPath);
+            const wallet = await Wallets.newFileSystemWallet(walletPath);
+            const identity = await wallet.get(decoded.userId);
+            if (!identity) {
+                return res.status(401).json({ success: false, message: 'Invalid user credentials' });
+            }
         }
 
         // Add user info to request

@@ -40,7 +40,7 @@ async function connectToNetwork(identity = 'admin') {
     const gateway = new Gateway();
     const wallet = await Wallets.newFileSystemWallet(config.fabric.walletPath);
     
-    const connectionProfile = require('../connection-profile.json');
+    const connectionProfile = require(path.join(__dirname, '..', '..', 'connection-profile.json'));
     
     await gateway.connect(connectionProfile, {
         wallet,
@@ -284,6 +284,23 @@ app.post('/api/candidates/seed', authenticate, authorizeAdmin, async (req, res) 
         gateway.disconnect();
     } catch (error) {
         console.error('Seed candidates error:', error);
+        res.status(500).json({ success: false, message: error.message });
+    }
+});
+
+// Admin-only: enroll arbitrary user in CA wallet
+app.post('/api/user/enroll', authenticate, authorizeAdmin, async (req, res) => {
+    try {
+        const { userId, role } = req.body || {};
+        if (!userId) {
+            return res.status(400).json({ success: false, message: 'userId is required' });
+        }
+        const caService = new FabricCAService(config.fabric.caName, config.fabric.walletPath, config.fabric.mspId);
+        await caService.init();
+        await caService.registerAndEnrollUser(userId, role || 'client');
+        res.json({ success: true, message: `User ${userId} enrolled` });
+    } catch (error) {
+        console.error('User enroll error:', error);
         res.status(500).json({ success: false, message: error.message });
     }
 });

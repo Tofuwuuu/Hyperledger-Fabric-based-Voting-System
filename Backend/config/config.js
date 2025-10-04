@@ -12,7 +12,7 @@ module.exports = {
         chaincodeName: process.env.CHAINCODE_NAME || 'votingcc',
         mspId: process.env.MSP_ID || 'ElectionCommissionMSP',
         // Default to the existing repo wallet directory
-        walletPath: process.env.WALLET_PATH || 'Backend/Backend/wallet',
+        walletPath: process.env.WALLET_PATH || 'Backend/wallet',
         // Name of the CA as it appears under certificateAuthorities in connection-profile.json
         caName: process.env.CA_NAME || 'ca.electioncommission.example.com'
     },
